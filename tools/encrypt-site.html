@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Wedding Site — Build Encrypted Page</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: #faf8f4;
+        color: #2e2a27;
+        max-width: 640px;
+        margin: 3rem auto;
+        padding: 0 1.5rem 3rem;
+        line-height: 1.6;
+    }
+    h1 { font-size: 1.5rem; }
+    p.help { color: #6b635c; font-size: 0.95rem; }
+    label { display: block; font-weight: 600; margin: 1.5rem 0 0.5rem; }
+    input[type="file"], input[type="password"], input[type="text"] {
+        width: 100%; padding: 0.7rem 0.9rem; border: 1px solid #ede4d9; border-radius: 6px;
+        font-size: 1rem; box-sizing: border-box; background: #fff;
+    }
+    button {
+        margin-top: 1.5rem; padding: 0.85rem 1.5rem; border: none; border-radius: 6px;
+        background: #b24a3b; color: #fff; font-weight: 600; font-size: 0.95rem; cursor: pointer;
+    }
+    button:hover { background: #8a3124; }
+    button:disabled { opacity: 0.5; cursor: default; }
+    #status { margin-top: 1.25rem; font-size: 0.95rem; white-space: pre-wrap; }
+    #status.error { color: #b24a3b; }
+    #status.success { color: #345e45; }
+    #downloadLink {
+        display: none; margin-top: 1rem; padding: 0.85rem 1.5rem; border-radius: 6px;
+        background: #345e45; color: #fff; text-decoration: none; font-weight: 600; text-align: center;
+    }
+    code { background: #f0d3cc; padding: 0.1rem 0.4rem; border-radius: 3px; }
+</style>
+</head>
+<body>
+    <h1>Wedding Site — Encrypted Build Tool</h1>
+    <p class="help">
+        Run this locally in your browser whenever you update <code>src/index.html</code>,
+        <code>src/styles.css</code> or <code>src/script.js</code>. It packages and encrypts the
+        site so the content is unreadable without the password &mdash; nothing is uploaded anywhere,
+        everything happens in your browser.
+    </p>
+
+    <label for="filePicker">1. Select all three source files (Ctrl/Cmd-click to multi-select in src/)</label>
+    <input type="file" id="filePicker" multiple accept=".html,.css,.js">
+
+    <label for="password">2. Choose the invitation password (share this with your guests)</label>
+    <input type="password" id="password" placeholder="e.g. a word or phrase only guests will recognize" autocomplete="off">
+
+    <button id="generateBtn">Generate Encrypted index.html</button>
+    <a id="downloadLink" download="index.html">Download index.html</a>
+
+    <div id="status"></div>
+
+<script>
+(function () {
+    const PBKDF2_ITERATIONS = 250000;
+    const filePicker = document.getElementById('filePicker');
+    const passwordInput = document.getElementById('password');
+    const generateBtn = document.getElementById('generateBtn');
+    const downloadLink = document.getElementById('downloadLink');
+    const statusEl = document.getElementById('status');
+
+    function setStatus(message, kind) {
+        statusEl.textContent = message;
+        statusEl.className = kind || '';
+    }
+
+    function readFileAsText(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = () => reject(reader.error);
+            reader.readAsText(file);
+        });
+    }
+
+    function bufToB64(buf) {
+        let binary = '';
+        const bytes = new Uint8Array(buf);
+        for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+        return btoa(binary);
+    }
+
+    async function encryptHtml(plainHtml, password) {
+        const salt = crypto.getRandomValues(new Uint8Array(16));
+        const iv = crypto.getRandomValues(new Uint8Array(12));
+        const enc = new TextEncoder();
+
+        const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
+        const key = await crypto.subtle.deriveKey(
+            { name: 'PBKDF2', salt, iterations: PBKDF2_ITERATIONS, hash: 'SHA-256' },
+            keyMaterial,
+            { name: 'AES-GCM', length: 256 },
+            false,
+            ['encrypt']
+        );
+
+        const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, enc.encode(plainHtml));
+
+        return {
+            salt: bufToB64(salt),
+            iv: bufToB64(iv),
+            data: bufToB64(ciphertext)
+        };
+    }
+
+    function buildLoaderHtml({ salt, iv, data }) {
+        return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Samuele &amp; Ieva — Our Wedding</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300..600;1,300..600&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #b24a3b;
+    --primary-light: #f0d3cc;
+    --bg-light: #faf8f4;
+    --text-dark: #2e2a27;
+    --text-muted: #6b635c;
+    --border-color: #ede4d9;
+    --font-serif: 'Playfair Display', Georgia, serif;
+    --font-sans: 'Montserrat', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bg-light);
+    font-family: var(--font-sans);
+    color: var(--text-dark);
+    padding: 1.5rem;
+  }
+  .lock-card {
+    width: 100%;
+    max-width: 400px;
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 3rem 2.25rem;
+    text-align: center;
+    box-shadow: 0 16px 40px rgba(178, 74, 59, 0.08);
+  }
+  .lock-icon { font-size: 1.8rem; margin-bottom: 1rem; color: var(--primary-light); }
+  .lock-card h1 {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: 1.9rem;
+    margin: 0 0 0.5rem;
+  }
+  .lock-card p.sub {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin: 0 0 2rem;
+  }
+  .lock-card input[type="password"] {
+    width: 100%;
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 1rem;
+    font-family: var(--font-sans);
+    outline: none;
+    margin-bottom: 1.25rem;
+  }
+  .lock-card input[type="password"]:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(178, 74, 59, 0.1);
+  }
+  .lock-card button {
+    width: 100%;
+    padding: 0.9rem 1rem;
+    border: none;
+    border-radius: 6px;
+    background-color: var(--primary);
+    color: #fff;
+    font-family: var(--font-sans);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  .lock-card button:hover { background-color: #8a3124; }
+  .lock-card button:disabled { opacity: 0.6; cursor: default; }
+  .lock-error {
+    display: none;
+    color: var(--primary);
+    font-size: 0.85rem;
+    margin-top: 1rem;
+  }
+</style>
+</head>
+<body>
+  <div class="lock-card">
+    <div class="lock-icon">&#10047;</div>
+    <h1>Samuele &amp; Ieva</h1>
+    <p class="sub">Enter the password from your invitation to view our wedding details.</p>
+    <form id="unlockForm" autocomplete="off">
+      <input type="password" id="sitePassword" placeholder="Password" required autofocus>
+      <button type="submit" id="unlockBtn">View Invitation</button>
+      <p class="lock-error" id="lockError">Incorrect password. Please try again.</p>
+    </form>
+  </div>
+<script>
+(function () {
+  var SALT = "${salt}";
+  var IV = "${iv}";
+  var DATA = "${data}";
+  var ITERATIONS = ${PBKDF2_ITERATIONS};
+
+  function b64ToBuf(b64) {
+    var bin = atob(b64);
+    var buf = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
+    return buf;
+  }
+
+  function decryptSite(password) {
+    var enc = new TextEncoder();
+    return crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey'])
+      .then(function (keyMaterial) {
+        return crypto.subtle.deriveKey(
+          { name: 'PBKDF2', salt: b64ToBuf(SALT), iterations: ITERATIONS, hash: 'SHA-256' },
+          keyMaterial,
+          { name: 'AES-GCM', length: 256 },
+          false,
+          ['decrypt']
+        );
+      })
+      .then(function (key) {
+        return crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64ToBuf(IV) }, key, b64ToBuf(DATA));
+      })
+      .then(function (plainBuf) {
+        return new TextDecoder().decode(plainBuf);
+      });
+  }
+
+  var cached = sessionStorage.getItem('weddingSiteContent');
+  if (cached) {
+    document.open();
+    document.write(cached);
+    document.close();
+  }
+
+  var form = document.getElementById('unlockForm');
+  var errorEl = document.getElementById('lockError');
+  var btn = document.getElementById('unlockBtn');
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var password = document.getElementById('sitePassword').value;
+    errorEl.style.display = 'none';
+    btn.disabled = true;
+    btn.textContent = 'Checking...';
+    decryptSite(password).then(function (html) {
+      sessionStorage.setItem('weddingSiteContent', html);
+      document.open();
+      document.write(html);
+      document.close();
+    }).catch(function () {
+      errorEl.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'View Invitation';
+    });
+  });
+})();
+<\/script>
+</body>
+</html>
+`;
+    }
+
+    generateBtn.addEventListener('click', async function () {
+        try {
+            downloadLink.style.display = 'none';
+            const files = Array.from(filePicker.files || []);
+            if (files.length !== 3) {
+                setStatus('Please select exactly 3 files: index.html, styles.css and script.js from the src/ folder.', 'error');
+                return;
+            }
+            const password = passwordInput.value;
+            if (!password || password.length < 4) {
+                setStatus('Please choose a password with at least 4 characters.', 'error');
+                return;
+            }
+
+            const byName = {};
+            files.forEach(f => { byName[f.name.toLowerCase()] = f; });
+            if (!byName['index.html'] || !byName['styles.css'] || !byName['script.js']) {
+                setStatus('Could not find index.html, styles.css and script.js among the selected files. Please re-select the 3 files from src/.', 'error');
+                return;
+            }
+
+            generateBtn.disabled = true;
+            setStatus('Reading source files...');
+
+            const [htmlSrc, cssSrc, jsSrc] = await Promise.all([
+                readFileAsText(byName['index.html']),
+                readFileAsText(byName['styles.css']),
+                readFileAsText(byName['script.js'])
+            ]);
+
+            let combinedHtml = htmlSrc
+                .replace('<link rel="stylesheet" href="styles.css">', `<style>\n${cssSrc}\n</style>`)
+                .replace('<script src="script.js"><' + '/script>', `<script>\n${jsSrc}\n<\/script>`);
+
+            setStatus('Encrypting content...');
+            const encrypted = await encryptHtml(combinedHtml, password);
+            const loaderHtml = buildLoaderHtml(encrypted);
+
+            const blob = new Blob([loaderHtml], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            downloadLink.href = url;
+            downloadLink.style.display = 'block';
+
+            setStatus('Done! Click "Download index.html" below, then replace the index.html at the root of your project with this file and commit/push it.', 'success');
+        } catch (err) {
+            setStatus('Something went wrong: ' + err.message, 'error');
+        } finally {
+            generateBtn.disabled = false;
+        }
+    });
+})();
+</script>
+</body>
+</html>
