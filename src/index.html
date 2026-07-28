@@ -122,8 +122,8 @@
                         <p class="highlight-text">June 9 – June 13, 2027</p>
                         <p><strong>Wedding Day:</strong> Wed, June 9 @ 3:00 PM</p>
                         <p><strong>Dinner:</strong> Wed, June 9 @ 4:30 PM</p>
-                        <p><strong>Hamar Trip:</strong> Fri, June 11 – Sun, June 13</p>
-                        <p class="sub-detail">Guests are requested to arrive at City Hall by 2:30 PM on Wednesday.</p>
+                        <p><strong>Hamar Trip:</strong> Thu, June 10 – Sun, June 13</p>
+                        <p class="sub-detail">Guests are requested to arrive at City Hall by 2:30 PM on Wednesday. A taxi to Tryvannstua will be organized for guests after the ceremony, departing at 4:30 PM.</p>
                     </div>
 
                     <!-- Location Card -->
@@ -140,7 +140,7 @@
                         <p class="highlight-text" style="margin-top: 0.75rem;">Dinner: Tryvannstua</p>
                         <p>Tryvannsveien 3, 0791 Oslo</p>
                         <p class="highlight-text" style="margin-top: 0.75rem;">Cabin Trip: Hamar Hytte</p>
-                        <p>Hamar, Innlandet, Norway</p>
+                        <p>Fjellvegen 751, Hamar, Innlandet 2324</p>
                     </div>
 
                     <!-- Accommodations Card -->
@@ -153,7 +153,7 @@
                         <h3>Attire & Event Notes</h3>
                         <p class="highlight-text">Formal for Wedding • Casual for Hamar</p>
                         <p>Formal attire for Wednesday's ceremony & dinner. Bring comfortable clothing, warm layers, and sturdy footwear for the Hamar cabin trip and Medieval Festival on Saturday.</p>
-                        <p class="sub-detail">Carpooling to Hamar will be arranged for guests.</p>
+                        <p class="sub-detail">Cars to Hamar will be arranged for guests. You're welcome to join for just the wedding, just the hytta, a few days, or the whole week — no need to stay for everything!</p>
                     </div>
                 </div>
             </div>
@@ -191,35 +191,35 @@
                         <div class="timeline-time">4:30 PM (16:30)</div>
                         <div class="timeline-content">
                             <h3>Dinner Reception at Tryvannstua</h3>
-                            <p>Gathering at the Tryvannstua forest lodge in Nordmarka for a warm welcome, dinner, speeches, and an evening bonfire under the stars.</p>
+                            <p>An organized taxi will take guests from Rådhuset to the Tryvannstua forest lodge in Nordmarka for a warm welcome, dinner, speeches, and an evening bonfire under the stars.</p>
                         </div>
                     </div>
 
                     <!-- DAY 2 -->
                     <div class="timeline-day-header">
-                        <span class="day-badge">Thursday, June 10 — Free Day</span>
+                        <span class="day-badge">Thursday, June 10 — Travel to Hamar</span>
+                    </div>
+
+                    <div class="timeline-item animate-on-scroll">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-time">Late Morning</div>
+                        <div class="timeline-content">
+                            <h3>Drive to Rented Hytte in Hamar</h3>
+                            <p>We take cars together in the late morning and head up to the rented hytte at Fjellvegen 751, Hamar, Innlandet 2324, settle in, and enjoy a warm evening together.</p>
+                        </div>
+                    </div>
+
+                    <!-- DAY 3 -->
+                    <div class="timeline-day-header">
+                        <span class="day-badge">Friday, June 11 — Relax at the Hytta</span>
                     </div>
 
                     <div class="timeline-item animate-on-scroll">
                         <div class="timeline-dot"></div>
                         <div class="timeline-time">All Day</div>
                         <div class="timeline-content">
-                            <h3>Free Day in Oslo</h3>
-                            <p>A relaxed day for everyone to rest, explore Oslo, visit the fjord, or enjoy local cafes at your own pace.</p>
-                        </div>
-                    </div>
-
-                    <!-- DAY 3 -->
-                    <div class="timeline-day-header">
-                        <span class="day-badge">Friday, June 11 — Hamar Cabin Trip</span>
-                    </div>
-
-                    <div class="timeline-item animate-on-scroll">
-                        <div class="timeline-dot"></div>
-                        <div class="timeline-time">Afternoon</div>
-                        <div class="timeline-content">
-                            <h3>Drive to Rented Hytte in Hamar</h3>
-                            <p>We take cars together and head up to Hamar to stay at a cozy rented cabin lodge, settle in, and enjoy a warm evening together.</p>
+                            <h3>Organized Hiking & Relaxing</h3>
+                            <p>A relaxed day at the hytte — an organized hike for those who fancy it, or simply relaxing, chatting, and enjoying the surroundings.</p>
                         </div>
                     </div>
 
@@ -283,83 +283,48 @@
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Will you join us for the celebration?</label>
-                                <div class="radio-group">
-                                    <label class="radio-label">
-                                        <input type="radio" name="attendance" value="attending" checked>
-                                        <span class="custom-radio"></span>
-                                        Joyfully Accept
+                                <label>Will you join us?</label>
+                                <div class="checkbox-group">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="attend_wedding" id="attendWedding" value="Wedding">
+                                        <span class="custom-checkbox"></span>
+                                        I'll be at the Wedding
+                                        <span class="event-subtitle-note">Wed, June 9 — Ceremony at Rådhuset (3 PM) & Dinner at Tryvannstua (4:30 PM)</span>
                                     </label>
-                                    <label class="radio-label">
-                                        <input type="radio" name="attendance" value="declined">
-                                        <span class="custom-radio"></span>
-                                        Regretfully Decline
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="attend_hytta" id="attendHytta" value="Hytta">
+                                        <span class="custom-checkbox"></span>
+                                        I'll be at the Hytta
+                                        <span class="event-subtitle-note">Thu, June 10 – Sun, June 13 — Hamar cabin stay, including the Medieval Festival on Saturday</span>
                                     </label>
+                                </div>
+                                <p class="sub-detail" style="margin-top: 0.75rem;">Come for just the wedding, just the hytta, a few days, or the whole week — no need to stay for everything!</p>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="checkbox-label" for="plusOne" style="padding-left: 2.2rem;">
+                                    <input type="checkbox" name="plus_one" id="plusOne">
+                                    <span class="custom-checkbox"></span>
+                                    I'm bringing a plus one
+                                </label>
+                            </div>
+                        </div>
+
+                        <div id="plusOneDetails" class="form-details-transition">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="plusOneName">Plus-one's Full Name</label>
+                                    <input type="text" id="plusOneName" name="plus_one_name" placeholder="Their full name">
                                 </div>
                             </div>
                         </div>
 
-                        <div id="attendingDetails" class="form-details-transition">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Which events will you attend?</label>
-                                    <div class="checkbox-group">
-                                        <label class="checkbox-label">
-                                            <input type="checkbox" name="event_wedding" id="eventWedding" value="Wed Wedding & Dinner" checked>
-                                            <span class="custom-checkbox"></span>
-                                            Wednesday, June 9: Wedding Ceremony (3 PM) & Dinner at Tryvannstua (4:30 PM)
-                                        </label>
-                                        <label class="checkbox-label">
-                                            <input type="checkbox" name="event_hamar_cabin" id="eventHamarCabin" value="Hamar Cabin Stay" checked>
-                                            <span class="custom-checkbox"></span>
-                                            Friday, June 11 – Sunday, June 13: Hamar Cabin Stay
-                                            <span class="event-subtitle-note">Rented hytte in Hamar with carpooling from Oslo</span>
-                                        </label>
-                                        <label class="checkbox-label">
-                                            <input type="checkbox" name="event_festival" id="eventFestival" value="Hamar Medieval Festival" checked>
-                                            <span class="custom-checkbox"></span>
-                                            Saturday, June 12: Hamar Medieval Festival
-                                            <span class="event-subtitle-note">Full day event at Domkirkeodden</span>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Transportation to Hamar (Fri June 11)</label>
-                                    <div class="radio-group" style="flex-direction: column; gap: 0.8rem;">
-                                        <label class="radio-label">
-                                            <input type="radio" name="transport" value="need_carpool" checked>
-                                            <span class="custom-radio"></span>
-                                            I need a ride / carpool from Oslo to Hamar
-                                        </label>
-                                        <label class="radio-label">
-                                            <input type="radio" name="transport" value="have_car">
-                                            <span class="custom-radio"></span>
-                                            I will be driving my own car (can offer seats)
-                                        </label>
-                                        <label class="radio-label">
-                                            <input type="radio" name="transport" value="not_applicable">
-                                            <span class="custom-radio"></span>
-                                            Not applicable
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="dietary">Dietary Restrictions</label>
-                                    <input type="text" id="dietary" name="dietary" placeholder="e.g. Vegetarian, Gluten-Free, None">
-                                </div>
-                            </div>
-
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="songRequest">Song / Message Request</label>
-                                    <input type="text" id="songRequest" name="song" placeholder="What song will get you dancing, or leave a note for us!">
-                                </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="dietary">Dietary Restrictions</label>
+                                <input type="text" id="dietary" name="dietary" placeholder="e.g. Vegetarian, Gluten-Free, None">
                             </div>
                         </div>
 

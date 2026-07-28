@@ -114,72 +114,86 @@ document.addEventListener('DOMContentLoaded', () => {
     /* ==========================================================================
        5. RSVP FORM INTERACTIONS
        ========================================================================== */
+    // Replace with the deployment URL of your Google Apps Script Web App (see tools/ setup notes).
+    const RSVP_ENDPOINT = "https://script.google.com/macros/s/AKfycbxFcbwJbB5rcScF6sKHq6uBlHIxBs5_8FFMjCOIQvw1EjfbiphYM8PLHzN2_LFZSbRfKA/exec";
+
     const rsvpForm = document.getElementById('rsvpForm');
     const rsvpSuccess = document.getElementById('rsvpSuccess');
     const successText = document.getElementById('successText');
     const resetRsvpBtn = document.getElementById('resetRsvp');
-    const attendingDetails = document.getElementById('attendingDetails');
-    const attendanceRadios = document.querySelectorAll('input[name="attendance"]');
+    const plusOneCheckbox = document.getElementById('plusOne');
+    const plusOneDetails = document.getElementById('plusOneDetails');
     const submitBtn = document.getElementById('submitBtn');
 
-    // Toggle details (dietary, song) based on attendance response
-    attendanceRadios.forEach(radio => {
-        radio.addEventListener('change', (e) => {
-            if (e.target.value === 'attending') {
-                attendingDetails.classList.add('open');
-                document.getElementById('dietary').required = false;
+    // Toggle the plus-one name field when the plus-one checkbox is ticked
+    if (plusOneCheckbox && plusOneDetails) {
+        plusOneCheckbox.addEventListener('change', () => {
+            if (plusOneCheckbox.checked) {
+                plusOneDetails.classList.add('open');
             } else {
-                attendingDetails.classList.remove('open');
+                plusOneDetails.classList.remove('open');
             }
         });
-    });
-
-    // Initialize opening state based on default selection (attending)
-    const checkedAttendance = document.querySelector('input[name="attendance"]:checked');
-    if (checkedAttendance && checkedAttendance.value === 'attending') {
-        attendingDetails.classList.add('open');
     }
 
     // Form Submission Handling
     if (rsvpForm) {
-        rsvpForm.addEventListener('submit', (e) => {
+        rsvpForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
             // Perform simple validation
             const name = document.getElementById('guestName').value.trim();
             const email = document.getElementById('guestEmail').value.trim();
-            const attendance = document.querySelector('input[name="attendance"]:checked').value;
 
             if (!name || !email) {
                 alert('Please fill out all required fields.');
                 return;
             }
 
+            const attendingWedding = document.getElementById('attendWedding')?.checked || false;
+            const attendingHytta = document.getElementById('attendHytta')?.checked || false;
+            const bringingPlusOne = plusOneCheckbox?.checked || false;
+            const plusOneName = document.getElementById('plusOneName').value.trim();
+            const dietary = document.getElementById('dietary').value.trim();
+
             // Put button into loading state
             submitBtn.classList.add('loading');
             submitBtn.disabled = true;
 
-            // Simulate server network latency (1.5 seconds)
-            setTimeout(() => {
+            try {
+                const params = new URLSearchParams();
+                params.append('name', name);
+                params.append('email', email);
+                params.append('attending_wedding', attendingWedding ? 'Yes' : 'No');
+                params.append('attending_hytta', attendingHytta ? 'Yes' : 'No');
+                params.append('plus_one', bringingPlusOne ? 'Yes' : 'No');
+                params.append('plus_one_name', bringingPlusOne ? plusOneName : '');
+                params.append('dietary', dietary);
+
+                await fetch(RSVP_ENDPOINT, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: params
+                });
+
                 // Clear loading state
                 submitBtn.classList.remove('loading');
                 submitBtn.disabled = false;
 
-                // Customize the success message based on attendance choice
-                if (attendance === 'attending') {
-                    const selectedEvents = [];
-                    if (document.getElementById('eventWedding')?.checked) selectedEvents.push("Wedding Ceremony & Dinner (Wed Jun 9)");
-                    if (document.getElementById('eventHamarCabin')?.checked) selectedEvents.push("Hamar Cabin Stay (Fri–Sun)");
-                    if (document.getElementById('eventFestival')?.checked) selectedEvents.push("Hamar Medieval Festival (Sat Jun 12)");
+                // Customize the success message based on attendance choices
+                const selectedEvents = [];
+                if (attendingWedding) selectedEvents.push('the Wedding (Wed Jun 9)');
+                if (attendingHytta) selectedEvents.push('the Hytta (Thu–Sun)');
 
-                    let eventSummary = "";
-                    if (selectedEvents.length > 0) {
-                        eventSummary = ` You are registered for: ${selectedEvents.join(", ")}.`;
+                let eventSummary = '';
+                if (selectedEvents.length > 0) {
+                    eventSummary = ` We look forward to seeing you at: ${selectedEvents.join(' and ')}.`;
+                    if (bringingPlusOne && plusOneName) {
+                        eventSummary += ` We've noted your plus one, ${plusOneName}.`;
                     }
-
                     successText.innerText = `We are so excited to celebrate with you, ${name}!${eventSummary} Your response has been saved.`;
                 } else {
-                    successText.innerText = `Thank you for letting us know, ${name}. We will miss you at the wedding, but wish you all the best!`;
+                    successText.innerText = `Thank you for letting us know, ${name}. We will miss you, but wish you all the best!`;
                 }
 
                 // Hide form and show success card with animations
@@ -188,8 +202,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     rsvpForm.classList.add('hidden'); // absolute display none after fade-out
                     rsvpSuccess.classList.remove('hidden');
                 }, 500);
-
-            }, 1500);
+            } catch (err) {
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+                alert('Something went wrong sending your RSVP. Please check your connection and try again.');
+            }
         });
     }
 
@@ -200,9 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
             rsvpForm.classList.remove('hidden');
             rsvpForm.classList.remove('fade-out');
             rsvpForm.reset();
-            
-            // Set details section state back to visible (since form resets to default "attending")
-            attendingDetails.classList.add('open');
+            plusOneDetails.classList.remove('open');
         });
     }
 });
