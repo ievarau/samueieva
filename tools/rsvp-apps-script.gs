@@ -3,7 +3,7 @@
  *
  * SETUP:
  * 1. Create a Google Sheet (any name). Add this exact header row on row 1 of the first tab:
- *    Timestamp | Name | Email | Attending Wedding | Attending Hytta | Plus One | Plus One Name | Dietary
+ *    Timestamp | Name | Email | Attending Wedding | Attending Hytta | Plus One | Plus One Name | Dietary | Plus One Dietary
  * 2. In that Sheet: Extensions -> Apps Script.
  * 3. Delete any starter code and paste this whole file in.
  * 4. Click Deploy -> New deployment -> select type "Web app".
@@ -24,7 +24,7 @@ function doPost(e) {
   if (sheet.getLastRow() === 0) {
     sheet.appendRow([
       'Timestamp', 'Name', 'Email', 'Attending Wedding', 'Attending Hytta',
-      'Plus One', 'Plus One Name', 'Dietary'
+      'Plus One', 'Plus One Name', 'Dietary', 'Plus One Dietary'
     ]);
   }
 
@@ -38,7 +38,8 @@ function doPost(e) {
     params.attending_hytta || '',
     params.plus_one || '',
     params.plus_one_name || '',
-    params.dietary || ''
+    params.dietary || '',
+    params.plus_one_dietary || ''
   ]);
 
   return ContentService

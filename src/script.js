@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
        5. RSVP FORM INTERACTIONS
        ========================================================================== */
     // Replace with the deployment URL of your Google Apps Script Web App (see tools/ setup notes).
-    const RSVP_ENDPOINT = "https://script.google.com/macros/s/AKfycbxFcbwJbB5rcScF6sKHq6uBlHIxBs5_8FFMjCOIQvw1EjfbiphYM8PLHzN2_LFZSbRfKA/exec";
+    const RSVP_ENDPOINT = "https://script.google.com/macros/s/AKfycbz0ycuITjxyoe6_gGyglXv3FBDETObPN-zBHlArdowPrlVItHQPPmopZ0lz4xGm8iLjyA/exec";
 
     const rsvpForm = document.getElementById('rsvpForm');
     const rsvpSuccess = document.getElementById('rsvpSuccess');
@@ -154,6 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const attendingHytta = document.getElementById('attendHytta')?.checked || false;
             const bringingPlusOne = plusOneCheckbox?.checked || false;
             const plusOneName = document.getElementById('plusOneName').value.trim();
+            const plusOneDietary = document.getElementById('plusOneDietary').value.trim();
             const dietary = document.getElementById('dietary').value.trim();
 
             // Put button into loading state
@@ -169,6 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 params.append('plus_one', bringingPlusOne ? 'Yes' : 'No');
                 params.append('plus_one_name', bringingPlusOne ? plusOneName : '');
                 params.append('dietary', dietary);
+                params.append('plus_one_dietary', bringingPlusOne ? plusOneDietary : '');
 
                 await fetch(RSVP_ENDPOINT, {
                     method: 'POST',

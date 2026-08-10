@@ -392,31 +392,70 @@ h1, h2, h3, h4 {
 }
 
 /* ==========================================================================
-   STORY SECTION
+   PLAN SECTION
    ========================================================================== */
-.story-section {
+.plan-section {
     padding: 8rem 0;
     text-align: center;
     background-color: var(--bg-light);
 }
 
-.story-grid {
+.plan-grid {
     max-width: 700px;
     margin: 0 auto;
 }
 
-.story-text p {
+.plan-text p {
     font-size: 1.05rem;
     color: var(--text-muted);
     margin-bottom: 2rem;
 }
 
-.story-text .lead-text {
+.plan-text .lead-text {
     font-family: var(--font-serif);
     font-size: 1.4rem;
     line-height: 1.6;
     color: var(--text-dark);
     margin-bottom: 2.5rem;
+}
+
+/* ==========================================================================
+   GIFT SECTION
+   ========================================================================== */
+.gift-section {
+    padding: 8rem 0;
+    text-align: center;
+    background-color: var(--bg-card);
+}
+
+.gift-box {
+    max-width: 420px;
+    margin: 2.5rem auto 0;
+    padding: 2.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: var(--bg-light);
+    box-shadow: var(--shadow-premium);
+}
+
+.gift-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: 0.35rem;
+}
+
+.gift-value {
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
+    color: var(--text-dark);
+    margin-bottom: 1.5rem;
+}
+
+.gift-value.gift-iban {
+    letter-spacing: 0.05em;
+    margin-bottom: 0;
 }
 
 /* ==========================================================================
